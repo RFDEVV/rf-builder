@@ -1,4 +1,4 @@
-name: Flutter CI
+name: Flutter Debug Build
 
 on:
   push:
@@ -22,20 +22,13 @@ jobs:
           cache: true
 
       - run: flutter pub get
-
-      - name: Decode Keystore
-        run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/release-keystore.jks
-          
-      - name: Build Release APK
-        env:
-          KEYSTORE_PATH: release-keystore.jks
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: flutter build apk --release
       
+      # Build Debug APK
+      - name: Build Debug APK
+        run: flutter build apk --debug
+      
+      # Upload Artifact
       - uses: actions/upload-artifact@v4
         with:
-          name: release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
